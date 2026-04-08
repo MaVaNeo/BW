@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>British Wrestling Live</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#012169">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BW Live">
+<link rel="apple-touch-icon" href="icons/icon-192x192.png">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#C8102E;--navy:#012169;--gold:#F4C430;
+  --white:#F2F0EA;--dark:#080810;--mid:#131320;
+  --panel:#191928;--card:#1E1E30;--muted:#7070A0;
+  --green:#2BC76E;--amber:#F4A230;--blue:#5BA3E8;
+  --safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{background:var(--dark);color:var(--white);font-family:'Barlow',sans-serif;display:flex;flex-direction:column;padding-top:var(--safe-top)}
+
+/* TEXTURE */
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 60px,rgba(255,255,255,.008) 60px,rgba(255,255,255,.008) 61px);pointer-events:none;z-index:0}
+
+/* ── HEADER ── */
+.hdr{flex-shrink:0;background:var(--navy);border-bottom:3px solid var(--red);z-index:60;position:relative}
+.hdr::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(200,16,46,.18) 0%,transparent 55%);pointer-events:none}
+.hdr-inner{position:relative;display:flex;align-items:center;gap:10px;padding:9px 14px 7px;max-width:1100px;margin:0 auto}
+.logo-wrap{display:flex;align-items:center;gap:9px;flex:1;min-width:0}
+.logo-icon{width:42px;height:42px;flex-shrink:0;background:rgba(0,0,0,.3);border-radius:5px;overflow:hidden;border:1px solid rgba(244,196,48,.3);display:flex;align-items:center;justify-content:center}
+.logo-icon img{width:38px;height:38px;object-fit:contain;filter:invert(1) sepia(1) saturate(3) hue-rotate(5deg);opacity:.9}
+.logo-text h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(1rem,4.5vw,1.75rem);letter-spacing:2px;line-height:1;color:var(--white)}
+.logo-text .sub{font-family:'Barlow Condensed',sans-serif;font-size:.62rem;color:var(--gold);letter-spacing:3px;text-transform:uppercase;margin-top:1px}
+.hdr-right{display:flex;align-items:center;gap:8px}
+.clock{font-family:'Bebas Neue',sans-serif;font-size:.82rem;letter-spacing:2px;color:var(--muted)}
+.live-pill{display:flex;align-items:center;gap:5px;background:var(--red);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:2px;padding:4px 8px;border-radius:3px}
+.live-dot{width:6px;height:6px;background:#fff;border-radius:50%;animation:blink 1.5s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+.fav-btn-hdr{background:none;border:none;font-size:1.1rem;cursor:pointer;padding:4px;position:relative}
+.fav-badge{position:absolute;top:-2px;right:-2px;background:var(--red);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.55rem;font-weight:700;width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center;display:none}
+
+/* ── NAV TABS ── */
+.nav-tabs{flex-shrink:0;background:var(--mid);border-bottom:1px solid rgba(255,255,255,.07);display:flex;overflow-x:auto;scrollbar-width:none;z-index:50;position:relative}
+.nav-tabs::-webkit-scrollbar{display:none}
+.ntab{font-family:'Barlow Condensed',sans-serif;font-size:.78rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);background:none;border:none;border-bottom:3px solid transparent;padding:10px 14px;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:color .2s,border-color .2s}
+.ntab.active{color:var(--gold);border-bottom-color:var(--gold)}
+
+/* ── PICKER + STATS ── */
+.picker-row{flex-shrink:0;background:rgba(0,0,0,.35);border-bottom:1px solid rgba(255,255,255,.06);padding:8px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sel-wrap{position:relative;flex:1;min-width:160px}
+.sel-wrap::after{content:'▾';position:absolute;right:9px;top:50%;transform:translateY(-50%);color:var(--gold);font-size:.75rem;pointer-events:none}
+select.csel{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:5px;color:var(--white);font-family:'Barlow Condensed',sans-serif;font-size:.88rem;padding:7px 26px 7px 10px;outline:none;-webkit-appearance:none;appearance:none;cursor:pointer}
+select.csel:focus{border-color:var(--gold)}
+select.csel option{background:#131320}
+.btn{font-family:'Barlow Condensed',sans-serif;font-size:.78rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:7px 14px;border-radius:5px;border:none;cursor:pointer;flex-shrink:0;transition:opacity .15s}
+.btn:active{opacity:.75}
+.btn-gold{background:var(--gold);color:#000}
+.btn-ghost{background:rgba(255,255,255,.08);color:var(--white)}
+.btn-sm{padding:5px 10px;font-size:.7rem}
+.btn-icon{width:32px;height:32px;padding:0;display:flex;align-items:center;justify-content:center;font-size:.95rem;border-radius:5px}
+
+/* STATS */
+.stats-row{flex-shrink:0;display:flex;background:rgba(0,0,0,.25);border-bottom:1px solid rgba(255,255,255,.05);overflow-x:auto;scrollbar-width:none}
+.stats-row::-webkit-scrollbar{display:none}
+.sc{flex:1;min-width:58px;padding:8px 6px;border-right:1px solid rgba(255,255,255,.05);text-align:center}
+.sc:last-child{border-right:none}
+.sv{font-family:'Bebas Neue',sans-serif;font-size:1.45rem;line-height:1}
+.sl{font-family:'Barlow Condensed',sans-serif;font-size:.55rem;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-top:1px}
+.sc.g .sv{color:var(--green)}.sc.a .sv{color:var(--amber)}
+
+/* FILTER CHIPS */
+.chips-row{flex-shrink:0;display:flex;gap:6px;padding:8px 14px;background:rgba(0,0,0,.15);border-bottom:1px solid rgba(255,255,255,.05);overflow-x:auto;scrollbar-width:none;align-items:center}
+.chips-row::-webkit-scrollbar{display:none}
+.chip{font-family:'Barlow Condensed',sans-serif;font-size:.7rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:4px 10px;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .15s}
+.chip.on{background:rgba(244,196,48,.15);border-color:rgba(244,196,48,.4);color:var(--gold)}
+.chip-label{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;color:var(--muted);letter-spacing:1px;white-space:nowrap;flex-shrink:0}
+
+/* ── SCROLLABLE BODY ── */
+.page-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;position:relative;z-index:1;padding-bottom:calc(20px + var(--safe-bottom))}
+
+/* ── SPLASH / HOMEPAGE ── */
+.splash{max-width:1100px;margin:0 auto;padding:12px 12px}
+
+/* MAT COLUMN */
+.mats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+.mat-col{background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:10px;overflow:hidden}
+.mat-col-head{background:linear-gradient(135deg,var(--navy),rgba(1,33,105,.6));padding:10px 14px;display:flex;align-items:center;gap:8px;border-bottom:2px solid var(--red)}
+.mat-col-name{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:2px;color:var(--white)}
+.mat-bouts-count{margin-left:auto;font-family:'Barlow Condensed',sans-serif;font-size:.68rem;color:var(--muted);letter-spacing:1px}
+
+/* LIVE BOUT CARD */
+.live-bout{background:rgba(43,199,110,.07);border:1px solid rgba(43,199,110,.25);border-radius:7px;margin:10px;padding:10px;position:relative}
+.live-bout-label{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:2px;color:var(--green);text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.live-bout-label::before{content:'';width:6px;height:6px;background:var(--green);border-radius:50%;animation:blink 1.5s ease-in-out infinite;flex-shrink:0}
+.next-bout{background:rgba(244,162,48,.06);border:1px solid rgba(244,162,48,.2);border-radius:7px;margin:0 10px 10px;padding:10px}
+.next-bout-label{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:2px;color:var(--amber);text-transform:uppercase;margin-bottom:6px}
+
+/* BOUT DISPLAY (inside mat card) */
+.bd-wrestlers{display:flex;align-items:center;gap:6px}
+.bd-ath{flex:1;min-width:0}
+.bd-name{font-family:'Barlow Condensed',sans-serif;font-size:.92rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bd-name.won{color:var(--green)}.bd-name.lost{color:var(--muted)}
+.bd-club{font-family:'Barlow',sans-serif;font-size:.62rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bd-mid{flex-shrink:0;text-align:center;padding:0 8px}
+.bd-score{font-family:'Bebas Neue',sans-serif;font-size:1.05rem;letter-spacing:2px;line-height:1;color:var(--white)}
+.bd-vs{font-family:'Bebas Neue',sans-serif;font-size:.78rem;color:var(--red)}
+.bd-cat{font-family:'Barlow Condensed',sans-serif;font-size:.62rem;color:var(--gold);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.bd-meta{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;color:var(--muted);margin-top:4px;letter-spacing:.5px}
+.fav-star{background:none;border:none;font-size:.9rem;cursor:pointer;padding:0 2px;line-height:1;flex-shrink:0}
+
+/* UPCOMING LIST inside mat */
+.mat-upcoming{padding:0 10px 10px}
+.mat-upcoming-title{font-family:'Barlow Condensed',sans-serif;font-size:.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:6px 0 4px;border-top:1px solid rgba(255,255,255,.06)}
+.up-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer}
+.up-item:last-child{border-bottom:none}
+.up-num{font-family:'Bebas Neue',sans-serif;font-size:.75rem;color:var(--muted);width:20px;flex-shrink:0;text-align:center}
+.up-names{flex:1;min-width:0;font-family:'Barlow Condensed',sans-serif;font-size:.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.up-cat{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.up-fav{background:none;border:none;font-size:.8rem;cursor:pointer;padding:2px;line-height:1}
+
+/* ── CATEGORIES VIEW ── */
+.cats-view{max-width:1100px;margin:0 auto;padding:12px}
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:10px}
+.cat-card{background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:8px;overflow:hidden;cursor:pointer;transition:border-color .15s}
+.cat-card:active,.cat-card.expanded{border-color:rgba(244,196,48,.35)}
+.cat-head{padding:11px 13px;display:flex;align-items:flex-start;gap:8px;border-bottom:1px solid rgba(255,255,255,.05)}
+.cat-head-info{flex:1;min-width:0}
+.cat-group{font-family:'Barlow Condensed',sans-serif;font-size:.62rem;color:var(--gold);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px}
+.cat-name{font-family:'Bebas Neue',sans-serif;font-size:1.05rem;letter-spacing:1px}
+.cat-pill{font-family:'Barlow Condensed',sans-serif;font-size:.62rem;font-weight:700;letter-spacing:1px;padding:2px 7px;border-radius:10px;flex-shrink:0;margin-top:2px}
+.cat-pill.done{background:rgba(43,199,110,.15);color:var(--green)}
+.cat-pill.pend{background:rgba(244,162,48,.12);color:var(--amber)}
+.cat-prog{height:3px;background:rgba(255,255,255,.06)}
+.cat-prog-fill{height:100%;background:var(--green);transition:width .5s}
+.cat-detail{display:none;border-top:1px solid rgba(255,255,255,.06)}
+.cat-detail.open{display:block}
+.dp-tabs{display:flex;border-bottom:1px solid rgba(255,255,255,.06);overflow-x:auto;scrollbar-width:none}
+.dp-tabs::-webkit-scrollbar{display:none}
+.dp-tab{font-family:'Barlow Condensed',sans-serif;font-size:.74rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);background:none;border:none;border-bottom:3px solid transparent;padding:9px 12px;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:color .2s,border-color .2s}
+.dp-tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+.dp-body{padding:11px 13px}
+
+/* STANDINGS TABLE */
+.stbl{width:100%;border-collapse:collapse}
+.stbl th{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;text-align:left;padding:0 6px 7px;border-bottom:1px solid rgba(255,255,255,.07)}
+.stbl th:first-child{padding-left:0}.stbl th:last-child{text-align:right}
+.stbl td{padding:7px 6px;border-bottom:1px solid rgba(255,255,255,.04);font-family:'Barlow Condensed',sans-serif;font-size:.85rem;vertical-align:middle;cursor:pointer}
+.stbl td:first-child{padding-left:0}
+.stbl tr:last-child td{border-bottom:none}
+.stbl tr:hover td{background:rgba(255,255,255,.025)}
+.pos{font-family:'Bebas Neue',sans-serif;font-size:1.05rem;width:26px;color:var(--muted)}
+.pos.p1{color:#FFD700}.pos.p2{color:#C0C0C0}.pos.p3{color:#CD7F32}
+.ath-n{font-weight:600;color:var(--white)}
+.ath-c{font-size:.68rem;color:var(--muted);margin-top:1px}
+.wl{display:flex;gap:3px;font-size:.78rem}
+.ww{color:var(--green)}.ll{color:var(--red)}
+.pts{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--gold);text-align:right}
+
+/* BOUT ROWS */
+.br{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer;gap:0}
+.br:last-child{border-bottom:none}
+.br:hover{background:rgba(255,255,255,.02)}
+.br-ath{flex:1;min-width:0}
+.br-name{font-family:'Barlow Condensed',sans-serif;font-size:.88rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.br-name.won{color:var(--green)}.br-name.lost{color:var(--muted)}
+.br-club{font-family:'Barlow',sans-serif;font-size:.62rem;color:var(--muted)}
+.br-mid{flex-shrink:0;text-align:center;padding:0 10px;min-width:58px}
+.br-score{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:2px;line-height:1}
+.br-vs{font-family:'Bebas Neue',sans-serif;font-size:.78rem;color:var(--red)}
+.br-code{font-family:'Barlow Condensed',sans-serif;font-size:.58rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.br-time{font-family:'Barlow Condensed',sans-serif;font-size:.58rem;color:var(--muted)}
+.profile-lnk{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;color:var(--blue);background:none;border:none;cursor:pointer;padding:2px 3px;text-decoration:underline;text-underline-offset:2px;white-space:nowrap}
+
+/* ── FAVOURITES ── */
+.favs-view{max-width:1100px;margin:0 auto;padding:12px}
+.fav-section-title{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;color:var(--muted);margin:14px 0 8px;display:flex;align-items:center;gap:8px}
+.fav-section-title::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.07)}
+.notif-toggle{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:6px;cursor:pointer;margin-bottom:8px}
+.notif-toggle span{font-family:'Barlow Condensed',sans-serif;font-size:.8rem;color:var(--white);flex:1}
+.toggle-sw{width:36px;height:20px;background:rgba(255,255,255,.15);border-radius:10px;position:relative;flex-shrink:0;transition:background .2s}
+.toggle-sw.on{background:var(--green)}
+.toggle-sw::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;background:#fff;border-radius:50%;transition:transform .2s}
+.toggle-sw.on::after{transform:translateX(16px)}
+.notif-distance{display:flex;gap:6px;padding:8px 12px;background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:6px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.ndist-label{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;color:var(--muted);letter-spacing:1px;width:100%;margin-bottom:4px}
+.ndist-opt{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:700;padding:4px 10px;border-radius:12px;cursor:pointer;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:var(--muted);transition:all .15s}
+.ndist-opt.on{background:rgba(244,196,48,.15);border-color:rgba(244,196,48,.4);color:var(--gold)}
+.empty-favs{text-align:center;padding:40px 20px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;font-size:.88rem}
+
+/* ── MODAL ── */
+.ovl{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;align-items:flex-end;justify-content:center;padding-bottom:var(--safe-bottom)}
+.ovl.open{display:flex;animation:fi .15s ease}
+@keyframes fi{from{opacity:0}to{opacity:1}}
+.modal{background:var(--mid);border:1px solid rgba(255,255,255,.1);border-top:3px solid var(--gold);border-radius:14px 14px 0 0;width:100%;max-width:620px;max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch;position:relative;animation:su .22s ease}
+@keyframes su{from{transform:translateY(25px);opacity:.5}to{transform:translateY(0);opacity:1}}
+.mdrag{width:38px;height:4px;background:rgba(255,255,255,.14);border-radius:2px;margin:10px auto 0}
+.mclose{position:absolute;top:8px;right:10px;background:none;border:none;color:var(--muted);font-size:1.1rem;cursor:pointer;padding:8px}
+.mhead{padding:14px 16px 10px;border-bottom:1px solid rgba(255,255,255,.06)}
+.mhead h2{font-family:'Bebas Neue',sans-serif;font-size:1.25rem;letter-spacing:1px}
+.mhead .msub{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;color:var(--muted);letter-spacing:1px;margin-top:2px}
+.mbody{padding:12px 16px}
+
+/* ATHLETE MODAL */
+.ath-hero{display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(1,33,105,.3);border-bottom:1px solid rgba(255,255,255,.06)}
+.ath-av{width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.15rem;color:var(--gold);flex-shrink:0;border:2px solid rgba(244,196,48,.25)}
+.ath-hi h3{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:1px;line-height:1}
+.ath-hi .ahc{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;color:var(--muted);letter-spacing:1px;margin-top:3px}
+.ath-hi .ahw{font-family:'Barlow Condensed',sans-serif;font-size:.7rem;color:var(--gold);margin-top:2px}
+.ath-stats{display:flex;border-bottom:1px solid rgba(255,255,255,.06)}
+.as{flex:1;text-align:center;padding:9px 5px;border-right:1px solid rgba(255,255,255,.05)}
+.as:last-child{border-right:none}
+.asv{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;line-height:1}
+.asl{font-family:'Barlow Condensed',sans-serif;font-size:.56rem;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-top:1px}
+.as.g .asv{color:var(--green)}.as.r .asv{color:var(--red)}.as.a .asv{color:var(--gold)}
+.rb{display:inline-flex;align-items:center;font-family:'Barlow Condensed',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:1px;padding:2px 7px;border-radius:3px}
+.rb.w{background:rgba(43,199,110,.14);color:var(--green)}.rb.l{background:rgba(200,16,46,.14);color:var(--red)}
+.sec-div{display:flex;align-items:center;gap:8px;margin:12px 0 8px}
+.sec-div span{font-family:'Bebas Neue',sans-serif;font-size:.88rem;letter-spacing:2px;color:var(--muted);white-space:nowrap}
+.sec-div::before,.sec-div::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.07)}
+.bw-link{display:flex;align-items:center;gap:10px;background:rgba(1,33,105,.35);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:10px 12px;text-decoration:none;cursor:pointer}
+.bw-link-text{flex:1}.bw-link-title{font-family:'Barlow Condensed',sans-serif;font-size:.82rem;font-weight:600;color:var(--white)}
+.bw-link-sub{font-family:'Barlow',sans-serif;font-size:.67rem;color:var(--muted);margin-top:1px}
+.bw-link-arr{color:var(--gold);font-size:.85rem}
+
+/* META ROWS */
+.meta-block{background:rgba(0,0,0,.2);border-radius:6px;overflow:hidden;margin-bottom:10px}
+.meta-row{display:flex;justify-content:space-between;padding:8px 11px;border-bottom:1px solid rgba(255,255,255,.04)}
+.meta-row:last-child{border-bottom:none}
+.mk{font-family:'Barlow Condensed',sans-serif;font-size:.68rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.mv{font-family:'Barlow Condensed',sans-serif;font-size:.8rem;color:var(--white);font-weight:600;text-align:right}
+
+/* SCORE DISPLAY */
+.score-hero{text-align:center;background:rgba(0,0,0,.3);border-radius:7px;padding:12px;margin-bottom:12px}
+.score-big{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;letter-spacing:6px;line-height:1;color:var(--white)}
+.score-method{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-top:3px}
+
+/* TOAST */
+.toast{position:fixed;bottom:calc(16px + var(--safe-bottom));left:50%;transform:translateX(-50%) translateY(60px);background:var(--green);color:#000;font-family:'Barlow Condensed',sans-serif;font-size:.83rem;font-weight:700;letter-spacing:1px;padding:8px 18px;border-radius:20px;z-index:999;opacity:0;transition:all .25s;white-space:nowrap;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+/* STATE */
+.state-box{text-align:center;padding:40px 20px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;font-size:.88rem}
+.spinner{width:26px;height:26px;border:2px solid rgba(255,255,255,.1);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(min-width:600px){
+  .ovl{align-items:center;padding:20px}
+  .modal{border-radius:12px}
+}
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<div class="hdr">
+  <div class="hdr-inner">
+    <div class="logo-wrap">
+      <div class="logo-icon">
+        <img src="wrestling.png" alt="BW">
+      </div>
+      <div class="logo-text">
+        <h1>British Wrestling</h1>
+        <div class="sub">Live</div>
+      </div>
+    </div>
+    <div class="hdr-right">
+      <div class="clock" id="clock"></div>
+      <button class="fav-btn-hdr" onclick="goTab('favs')" title="Favourites">⭐<span class="fav-badge" id="fav-badge">0</span></button>
+      <div class="live-pill"><div class="live-dot"></div>Live</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── NAV TABS ── -->
+<div class="nav-tabs">
+  <button class="ntab active" id="tab-home" onclick="goTab('home')">🏠 Mats</button>
+  <button class="ntab" id="tab-cats" onclick="goTab('cats')">Categories</button>
+  <button class="ntab" id="tab-favs" onclick="goTab('favs')">⭐ Favourites</button>
+</div>
+
+<!-- ── PICKER ── -->
+<div class="picker-row">
+  <div class="sel-wrap">
+    <select class="csel" id="event-select" onchange="onEvtSel()">
+      <option value="">Discovering 2026 events…</option>
+    </select>
+  </div>
+  <button class="btn btn-gold btn-sm" id="load-btn" onclick="loadSelectedEvent()" disabled>Load</button>
+  <button class="btn btn-ghost btn-icon" id="refresh-btn" onclick="refreshEvent()" title="Refresh" style="display:none">↻</button>
+</div>
+
+<!-- ── STATS ── -->
+<div class="stats-row">
+  <div class="sc g"><div class="sv" id="s-done">—</div><div class="sl">Done</div></div>
+  <div class="sc a"><div class="sv" id="s-up">—</div><div class="sl">Upcoming</div></div>
+  <div class="sc"><div class="sv" id="s-bouts">—</div><div class="sl">Bouts</div></div>
+  <div class="sc"><div class="sv" id="s-cats">—</div><div class="sl">Cats</div></div>
+  <div class="sc"><div class="sv" id="s-ath">—</div><div class="sl">Athletes</div></div>
+</div>
+
+<!-- ── FILTERS ── -->
+<div class="chips-row" id="chips-row" style="display:none">
+  <span class="chip-label">Filter:</span>
+  <div id="age-chips"></div>
+  <div id="mat-chips" style="display:flex;gap:6px"></div>
+</div>
+
+<!-- ── BODY ── -->
+<div class="page-body" id="page-body">
+  <div class="state-box" id="welcome">
+    <div style="font-size:2.5rem;margin-bottom:10px">🤼</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:2px;color:var(--white);margin-bottom:6px">Select a Tournament</div>
+    <div>Choose a 2026 event from the dropdown above.</div>
+    <div style="margin-top:8px;color:rgba(255,255,255,.3);font-size:.75rem">Discovering events…</div>
+  </div>
+  <div id="home-view" style="display:none"></div>
+  <div id="cats-view" style="display:none"></div>
+  <div id="favs-view" style="display:none"></div>
+</div>
+
+<!-- ── BOUT MODAL ── -->
+<div class="ovl" id="bout-ovl">
+  <div class="modal">
+    <div class="mdrag"></div>
+    <button class="mclose" onclick="closeModal('bout-ovl')">✕</button>
+    <div class="mhead"><h2 id="bm-title">Bout</h2><div class="msub" id="bm-sub"></div></div>
+    <div class="mbody" id="bm-body"></div>
+  </div>
+</div>
+
+<!-- ── ATHLETE MODAL ── -->
+<div class="ovl" id="ath-ovl">
+  <div class="modal">
+    <div class="mdrag"></div>
+    <button class="mclose" onclick="closeModal('ath-ovl')">✕</button>
+    <div id="ath-content"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+const API='https://cmats-api.azurewebsites.net/api';
+// ── STATE ──
+let evtData=null, allCats=[], bracketCache={}, loadedId=null;
+let currentTab='home';
+let activeAgeFilter='all', activeMatFilter='all';
+let openCatId=null, openCatTab='standings';
+// Favourites: {fighters:{athId→{name,catId}}, bouts:{boutId→{catId}}}
+let favs = JSON.parse(localStorage.getItem('bw_favs')||'{"fighters":{},"bouts":{}}');
+let notifEnabled = JSON.parse(localStorage.getItem('bw_notif')||'false');
+let notifDistances = JSON.parse(localStorage.getItem('bw_ndist')||'[1,3]');
+
+// ── CLOCK ──
+setInterval(()=>{
+  document.getElementById('clock').textContent =
+    new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+},1000);
+
+if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+
+// ── API ──
+async function apiFetch(path){
+  const r=await fetch(API+path);
+  if(!r.ok) throw new Error(`${path}→${r.status}`);
+  return r.json();
+}
+
+// ── DISCOVER 2026 EVENTS ──
+async function discoverEvents(){
+  const sel=document.getElementById('event-select');
+  const found=[];
+  const BATCH=10;
+  const range=[];
+  for(let i=230;i<=370;i++) range.push(i);
+  for(let b=0;b<range.length;b+=BATCH){
+    const batch=range.slice(b,b+BATCH);
+    const res=await Promise.allSettled(batch.map(id=>apiFetch(`/event/${id}`)));
+    res.forEach((r,i)=>{
+      if(r.status!=='fulfilled') return;
+      const ev=r.value;
+      if(!ev||!ev.start||!ev.name) return;
+      if(new Date(ev.start).getFullYear()===2026) found.push({id:batch[i],ev});
+    });
+  }
+  found.sort((a,b)=>new Date(a.ev.start)-new Date(b.ev.start));
+  sel.innerHTML='<option value="">— Select a 2026 tournament —</option>';
+  found.forEach(({id,ev})=>{
+    const d=new Date(ev.start);
+    const ds=d.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+    const o=document.createElement('option');
+    o.value=id; o.textContent=`${ds} · ${ev.name}`;
+    sel.appendChild(o);
+  });
+  if(!found.length){
+    sel.innerHTML='<option value="">No 2026 events found</option>';
+  }
+  const last=localStorage.getItem('bw_last_event');
+  if(last&&found.some(f=>String(f.id)===last)){
+    sel.value=last; onEvtSel();
+  }
+  document.querySelector('#welcome div:last-child').style.display='none';
+  if(found.length) showToast(`Found ${found.length} events`);
+}
+
+function onEvtSel(){
+  document.getElementById('load-btn').disabled=!document.getElementById('event-select').value;
+}
+
+async function loadSelectedEvent(){
+  const id=document.getElementById('event-select').value;
+  if(!id) return;
+  await loadEvent(id);
+}
+
+async function refreshEvent(){
+  if(!loadedId) return;
+  bracketCache={};
+  await loadEvent(loadedId,true);
+}
+
+// ── LOAD EVENT ──
+async function loadEvent(id,silent=false){
+  loadedId=id;
+  localStorage.setItem('bw_last_event',id);
+  if(!silent){
+    document.getElementById('welcome').style.display='none';
+    showView('home'); setLoading('home','Loading tournament…');
+  }
+  try{
+    const [ev,groups]=await Promise.all([apiFetch(`/event/${id}`),apiFetch(`/event/${id}/categories/groups`)]);
+    evtData=ev; bracketCache={}; openCatId=null;
+    allCats=[];
+    groups.forEach(g=>g.categories.forEach(c=>{
+      if(c.stats&&(c.stats.totalBouts>0||c.stages>0)) allCats.push({...c,groupName:g.name});
+    }));
+    document.getElementById('refresh-btn').style.display='flex';
+    updateStats(); buildFilters(groups);
+    renderCurrentTab();
+    if(!silent) showToast(`✓ ${ev.name}`);
+  }catch(e){
+    setLoading('home','Failed to load. Check connection.',true);
+  }
+}
+
+// ── STATS ──
+function updateStats(){
+  let done=0,up=0,bouts=0;
+  Object.values(bracketCache).forEach(br=>{
+    eachBout(br,b=>{if(b.bye)return;bouts++;if(b.locked)done++;else up++;});
+  });
+  document.getElementById('s-done').textContent=done||'—';
+  document.getElementById('s-up').textContent=up||'—';
+  document.getElementById('s-bouts').textContent=bouts||'—';
+  document.getElementById('s-cats').textContent=allCats.length||'—';
+  document.getElementById('s-ath').textContent=evtData?.athletes||'—';
+}
+
+function eachBout(bracket,fn){
+  bracket.stages?.forEach(s=>s.groups?.forEach(g=>g.rounds?.forEach(r=>r.bouts?.forEach(fn))));
+}
+
+// ── FILTERS ──
+function buildFilters(groups){
+  const ages=[...new Set(allCats.map(c=>c.age?.name).filter(Boolean))];
+  const mats=[...new Set(
+    Object.values(bracketCache).flatMap(br=>br.mats?.map(m=>m.session?.mat?.name)||[]).filter(Boolean)
+  )];
+
+  const chipRow=document.getElementById('chips-row');
+  const ageDiv=document.getElementById('age-chips');
+  const matDiv=document.getElementById('mat-chips');
+
+  // Age chips
+  ageDiv.innerHTML='';
+  if(ages.length>1){
+    const all=mkChip('All Ages','all',activeAgeFilter==='all',v=>{activeAgeFilter=v;renderCurrentTab();rebuildFilters();});
+    ageDiv.appendChild(all);
+    ages.forEach(a=>ageDiv.appendChild(mkChip(a,'age:'+a,activeAgeFilter==='age:'+a,v=>{activeAgeFilter=v;renderCurrentTab();rebuildFilters();})));
+  }
+
+  // Mat chips
+  matDiv.innerHTML='';
+  if(mats.length>1){
+    matDiv.appendChild(mkChip('All Mats','all',activeMatFilter==='all',v=>{activeMatFilter=v;renderCurrentTab();rebuildFilters();}));
+    mats.forEach(m=>matDiv.appendChild(mkChip(m,'mat:'+m,activeMatFilter==='mat:'+m,v=>{activeMatFilter=v;renderCurrentTab();rebuildFilters();})));
+  }
+
+  chipRow.style.display=ages.length>1||mats.length>1?'flex':'none';
+}
+
+function rebuildFilters(){
+  // Rebuild without losing data
+  const groups=null; // we rebuild from allCats
+  buildFilters(null);
+}
+
+function mkChip(label,val,active,cb){
+  const el=document.createElement('div');
+  el.className='chip'+(active?' on':'');
+  el.textContent=label;
+  el.onclick=()=>{ cb(val); };
+  return el;
+}
+
+// ── TABS ──
+function goTab(tab){
+  currentTab=tab;
+  ['home','cats','favs'].forEach(t=>{
+    document.getElementById('tab-'+t)?.classList.toggle('active',t===tab);
+  });
+  renderCurrentTab();
+}
+
+function renderCurrentTab(){
+  ['home-view','cats-view','favs-view'].forEach(v=>document.getElementById(v).style.display='none');
+  if(!loadedId){ document.getElementById('welcome').style.display=''; return; }
+  document.getElementById('welcome').style.display='none';
+  showView(currentTab);
+  if(currentTab==='home') renderHome();
+  else if(currentTab==='cats') renderCats();
+  else if(currentTab==='favs') renderFavs();
+}
+
+function showView(tab){
+  document.getElementById('home-view').style.display=tab==='home'?'block':'none';
+  document.getElementById('cats-view').style.display=tab==='cats'?'block':'none';
+  document.getElementById('favs-view').style.display=tab==='favs'?'block':'none';
+}
+
+function setLoading(tab,msg,err=false){
+  const el=document.getElementById(tab+'-view');
+  el.style.display='block';
+  el.innerHTML=`<div class="state-box">${err?'':`<div class="spinner"></div>`}${msg}</div>`;
+}
+
+// ── HELPER: get mat name for a bout ──
+function getMatName(bracket,boutId){
+  const mats=bracket.mats||[];
+  for(const m of mats){
+    const sched=m.session?.schedule||[];
+    if(sched.some(s=>s.boutId===boutId)) return m.session?.mat?.name||'';
+    // Also check nested
+  }
+  // Check via schedule on bout itself
+  return '';
+}
+
+function getBoutMat(bout,bracket){
+  if(!bout.schedule) return '';
+  const matSessId=bout.schedule.matSessionId;
+  const m=bracket.mats?.find(mm=>mm.session?.id===matSessId);
+  return m?.session?.mat?.name||'';
+}
+
+// ── HOME: MAT-BASED SPLASH ──
+async function renderHome(){
+  const root=document.getElementById('home-view');
+  root.style.display='block';
+
+  // Gather all loaded bouts grouped by mat
+  // First load any unloaded bracket (for scheduled bouts)
+  // We show what we have
+  const catsToShow=filteredCats();
+  if(!catsToShow.length){ root.innerHTML='<div class="state-box">No categories match filter.</div>'; return; }
+
+  // Gather mats from all loaded brackets
+  const matMap={}; // matName → {live:[], next:[], upcoming:[]}
+
+  for(const cat of catsToShow){
+    if(!bracketCache[cat.id]) continue;
+    const br=bracketCache[cat.id];
+    const matName=br.mats?.[0]?.session?.mat?.name||'Mat ?';
+
+    if(!matMap[matName]) matMap[matName]={name:matName,live:[],next:[],upcoming:[],cat};
+
+    eachBout(br,bout=>{
+      if(bout.bye) return;
+      const entry={bout,cat,br};
+      if(bout.locked) return; // done
+      matMap[matName].upcoming.push(entry);
+    });
+  }
+
+  // If no brackets loaded yet, show prompt
+  const loadedCount=Object.keys(bracketCache).length;
+  if(loadedCount===0){
+    root.innerHTML=`<div class="splash"><div class="state-box">
+      <div class="spinner"></div>
+      Tap a category below to load its schedule, or load all categories first.
+      <br><br>
+      <button class="btn btn-gold" onclick="loadAllBrackets()">Load All Categories</button>
+    </div></div>`;
+    return;
+  }
+
+  // Sort upcoming by bout number
+  Object.values(matMap).forEach(m=>{
+    m.upcoming.sort((a,b)=>(a.bout.number||999)-(b.bout.number||999));
+    // First upcoming = "next"
+    if(m.upcoming.length) m.next=[m.upcoming[0]];
+  });
+
+  // Build mat columns
+  let html='<div class="splash"><div class="mats-grid">';
+  const matNames=Object.keys(matMap).sort();
+
+  if(!matNames.length){
+    html+='<div class="state-box" style="grid-column:1/-1">All bouts completed on loaded categories.<br>Load more categories to see upcoming bouts.</div>';
+  }
+
+  matNames.forEach(mn=>{
+    if(activeMatFilter!=='all'&&activeMatFilter!=='mat:'+mn) return;
+    const m=matMap[mn];
+    const next=m.upcoming[0]||null;
+    const queue=m.upcoming.slice(1,6); // next 5
+    const totalUp=m.upcoming.length;
+
+    html+=`<div class="mat-col">
+      <div class="mat-col-head">
+        <div class="mat-col-name">${mn}</div>
+        <div class="mat-bouts-count">${totalUp} upcoming</div>
+      </div>`;
+
+    if(next){
+      const {bout,cat}=next;
+      const favd=favs.bouts[bout.id];
+      html+=`<div class="next-bout" onclick="openBoutDetail(${bout.id},${cat.id})">
+        <div class="next-bout-label">▶ NEXT UP</div>
+        <div class="bd-cat">${cat.groupName} · ${cat.name||cat.discipline}</div>
+        <div class="bd-wrestlers">
+          <div class="bd-ath"><div class="bd-name">${bout.nameA||'TBD'}</div><div class="bd-club">${bout.athleteA?.clubName||''}</div></div>
+          <div class="bd-mid"><div class="bd-vs">VS</div></div>
+          <div class="bd-ath" style="text-align:right"><div class="bd-name">${bout.nameB||'TBD'}</div><div class="bd-club">${bout.athleteB?.clubName||''}</div></div>
+          <button class="fav-star" onclick="event.stopPropagation();toggleFavBout(${bout.id},${cat.id},'${(bout.nameA||'')+'vs'+(bout.nameB||'')}')">${favd?'⭐':'☆'}</button>
+        </div>
+      </div>`;
+    } else {
+      html+=`<div style="padding:10px 12px;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;color:var(--muted);text-align:center">No upcoming bouts</div>`;
+    }
+
+    if(queue.length){
+      html+=`<div class="mat-upcoming">
+        <div class="mat-upcoming-title">Queue</div>`;
+      queue.forEach(({bout,cat},i)=>{
+        const favd=favs.bouts[bout.id];
+        const nameA=bout.nameA||'TBD', nameB=bout.nameB||'TBD';
+        html+=`<div class="up-item" onclick="openBoutDetail(${bout.id},${cat.id})">
+          <div class="up-num">${i+2}</div>
+          <div style="flex:1;min-width:0">
+            <div class="up-names">${nameA} vs ${nameB}</div>
+            <div class="up-cat">${cat.groupName} · ${cat.name||cat.discipline}</div>
+          </div>
+          <button class="up-fav" onclick="event.stopPropagation();toggleFavBout(${bout.id},${cat.id},'${nameA}vs${nameB}')">${favd?'⭐':'☆'}</button>
+        </div>`;
+      });
+      if(totalUp>6) html+=`<div style="font-family:'Barlow Condensed',sans-serif;font-size:.65rem;color:var(--muted);text-align:center;padding:6px 0">+${totalUp-6} more bouts</div>`;
+      html+=`</div>`;
+    }
+    html+=`</div>`;
+  });
+
+  if(!Object.keys(matMap).some(mn=>activeMatFilter==='all'||activeMatFilter==='mat:'+mn)){
+    html+='<div class="state-box" style="grid-column:1/-1">No mats match filter.</div>';
+  }
+
+  html+=`</div>
+  <div style="text-align:center;margin:14px 0 4px">
+    <button class="btn btn-ghost btn-sm" onclick="loadAllBrackets()">Load all categories</button>
+  </div></div>`;
+  root.innerHTML=html;
+}
+
+async function loadAllBrackets(){
+  showToast('Loading all categories…');
+  const unloaded=allCats.filter(c=>!bracketCache[c.id]);
+  const BATCH=8;
+  for(let b=0;b<unloaded.length;b+=BATCH){
+    const batch=unloaded.slice(b,b+BATCH);
+    const res=await Promise.allSettled(batch.map(c=>apiFetch(`/category/${c.id}/bracket`)));
+    res.forEach((r,i)=>{ if(r.status==='fulfilled') bracketCache[batch[i].id]=r.value; });
+  }
+  updateStats();
+  buildFilters(null);
+  renderCurrentTab();
+  showToast('All categories loaded');
+}
+
+// ── CATS VIEW ──
+function renderCats(){
+  const root=document.getElementById('cats-view');
+  root.style.display='block';
+  const cats=filteredCats();
+  if(!cats.length){ root.innerHTML='<div class="cats-view"><div class="state-box">No categories.</div></div>'; return; }
+
+  let html='<div class="cats-view"><div class="cat-grid">';
+  cats.forEach(cat=>{
+    const br=bracketCache[cat.id];
+    const total=br?countBouts(br,false):cat.stats.totalBouts;
+    const done=br?countBouts(br,true):cat.stats.completedBouts;
+    const pct=total>0?Math.round(done/total*100):0;
+    const isOpen=openCatId===cat.id;
+    html+=`<div class="cat-card ${isOpen?'expanded':''}" id="catcard-${cat.id}">
+      <div class="cat-head" onclick="toggleCat(${cat.id})">
+        <div class="cat-head-info">
+          <div class="cat-group">${cat.groupName}</div>
+          <div class="cat-name">${cat.name||cat.discipline}</div>
+        </div>
+        <div class="cat-pill ${total>0&&done>=total?'done':'pend'}">${done}/${total}</div>
+      </div>
+      <div class="cat-prog"><div class="cat-prog-fill" style="width:${pct}%"></div></div>
+      <div class="cat-detail ${isOpen?'open':''}" id="catdet-${cat.id}">
+        ${isOpen&&br ? renderCatDetail(cat,br) : isOpen?'<div class="state-box"><div class="spinner"></div>Loading…</div>':''}
+      </div>
+    </div>`;
+  });
+  html+='</div></div>';
+  root.innerHTML=html;
+}
+
+function filteredCats(){
+  let cats=allCats;
+  if(activeAgeFilter!=='all'){
+    const age=activeAgeFilter.replace('age:','');
+    cats=cats.filter(c=>c.age?.name===age);
+  }
+  return cats;
+}
+
+function countBouts(br,doneOnly){
+  let n=0;
+  eachBout(br,b=>{if(b.bye)return;if(doneOnly?b.locked:true)n++;});
+  return n;
+}
+
+async function toggleCat(catId){
+  if(openCatId===catId){ openCatId=null; renderCats(); return; }
+  openCatId=catId; openCatTab='standings';
+  if(!bracketCache[catId]){
+    // Show loading in card
+    const det=document.getElementById('catdet-'+catId);
+    if(det){ det.classList.add('open'); det.innerHTML='<div class="state-box"><div class="spinner"></div>Loading…</div>'; }
+    try{ bracketCache[catId]=await apiFetch(`/category/${catId}/bracket`); updateStats(); }
+    catch(e){ if(det) det.innerHTML='<div class="state-box" style="color:var(--red)">Failed to load.</div>'; return; }
+  }
+  renderCats();
+  setTimeout(()=>document.getElementById('catcard-'+catId)?.scrollIntoView({behavior:'smooth',block:'nearest'}),80);
+}
+
+function renderCatDetail(cat,br){
+  return `<div class="dp-tabs">
+    <button class="dp-tab ${openCatTab==='standings'?'active':''}" onclick="setCatTab(${cat.id},'standings')">🏆 Standings</button>
+    <button class="dp-tab ${openCatTab==='bouts'?'active':''}" onclick="setCatTab(${cat.id},'bouts')">Completed</button>
+    <button class="dp-tab ${openCatTab==='upcoming'?'active':''}" onclick="setCatTab(${cat.id},'upcoming')">Upcoming</button>
+  </div>
+  <div class="dp-body">${renderCatTabBody(cat,br)}</div>`;
+}
+
+function setCatTab(catId,tab){
+  openCatTab=tab;
+  const cat=allCats.find(c=>c.id===catId);
+  const br=bracketCache[catId];
+  if(!cat||!br) return;
+  const det=document.getElementById('catdet-'+catId);
+  if(det) det.innerHTML=renderCatDetail(cat,br);
+}
+
+function renderCatTabBody(cat,br){
+  if(openCatTab==='standings') return renderStandings(cat,br);
+  if(openCatTab==='bouts') return renderBoutsSection(cat,br,true);
+  return renderBoutsSection(cat,br,false);
+}
+
+// ── STANDINGS (fixing score bug) ──
+function renderStandings(cat,br){
+  // Build member stats from group members (has correct won/lost/points)
+  const memberStats={};
+  br.stages?.forEach(s=>s.groups?.forEach(g=>{
+    g.members?.forEach(m=>{
+      memberStats[m.athleteId]={won:m.won||0,lost:m.lost||0,points:m.points||0,score:m.score||0,bouts:m.bouts||0};
+    });
+  }));
+
+  // allPlacements has position sorted correctly
+  const placements=br.allPlacements||[];
+  if(!placements.length) return '<div class="state-box">No standings yet.</div>';
+
+  const medal=['🥇','🥈','🥉'];
+  let h=`<table class="stbl"><thead><tr>
+    <th></th><th>Athlete</th><th>Club</th>
+    <th style="text-align:center">W–L</th>
+    <th style="text-align:center">Score</th>
+    <th style="text-align:right">Pts</th>
+  </tr></thead><tbody>`;
+
+  placements.forEach((p,i)=>{
+    const st=memberStats[p.athleteId]||{};
+    const pClass=i===0?'p1':i===1?'p2':i===2?'p3':'';
+    const favKey=`ath_${p.athleteId}`;
+    const isFav=!!favs.fighters[p.athleteId];
+    h+=`<tr onclick="openAthProfile(${p.athleteId},${cat.id})">
+      <td><span class="pos ${pClass}">${medal[i]||p.position}</span></td>
+      <td>
+        <div class="ath-n">${p.name} ${isFav?'⭐':''}</div>
+        <div class="ath-c">${p.club||''}</div>
+      </td>
+      <td><div class="ath-c">${p.club||''}</div></td>
+      <td style="text-align:center"><div class="wl"><span class="ww">${st.won}W</span><span style="color:var(--muted)">/</span><span class="ll">${st.lost}L</span></div></td>
+      <td style="text-align:center"><span style="font-family:'Bebas Neue',sans-serif;font-size:.95rem;color:var(--white)">${st.score||0}</span></td>
+      <td><span class="pts">${st.points||0}</span></td>
+    </tr>`;
+  });
+  return h+'</tbody></table>';
+}
+
+// ── BOUTS SECTION ──
+function renderBoutsSection(cat,br,completedOnly){
+  const bouts=[];
+  br.stages?.forEach(s=>s.groups?.forEach(g=>g.rounds?.forEach(r=>r.bouts?.forEach(b=>{
+    if(b.bye) return;
+    if(completedOnly&&!b.locked) return;
+    if(!completedOnly&&b.locked) return;
+    const matName=getBoutMat(b,br)||br.mats?.[0]?.session?.mat?.name||'';
+    bouts.push({bout:b,matName,round:r.name});
+  }))));
+  if(!bouts.length) return `<div class="state-box">${completedOnly?'No completed bouts.':'No upcoming bouts.'}</div>`;
+
+  let h='';
+  bouts.forEach(({bout,matName,round})=>{
+    const done=!!bout.locked;
+    const winA=done&&bout.victoryId===bout.athleteAId;
+    const winB=done&&bout.victoryId===bout.athleteBId;
+    const nameA=bout.nameA||'TBD', nameB=bout.nameB||'TBD';
+    const endT=bout.end?new Date(bout.end).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}):'';
+    const code=bout.classification?.code||'';
+    const favd=favs.bouts[bout.id];
+    const matStr=matName?` · ${matName}`:'';
+
+    h+=`<div class="br" onclick="openBoutDetail(${bout.id},${cat.id})">
+      <div class="br-ath">
+        <div class="br-name ${winA?'won':done?'lost':''}">${nameA}</div>
+        <div class="br-club">${bout.athleteA?.clubName||''}</div>
+        ${done&&bout.athleteAId?`<button class="profile-lnk" onclick="event.stopPropagation();openAthProfile(${bout.athleteAId},${cat.id})">profile →</button>`:''}
+      </div>
+      <div class="br-mid">
+        ${done?`<div class="br-score">${bout.scoreA??''}–${bout.scoreB??''}</div><div class="br-code">${code}</div><div class="br-time">${endT}</div>`
+              :`<div class="br-vs">VS</div><div class="br-code">${round||''}${matStr}</div>`}
+      </div>
+      <div class="br-ath" style="text-align:right">
+        <div class="br-name ${winB?'won':done?'lost':''}">${nameB}</div>
+        <div class="br-club">${bout.athleteB?.clubName||''}</div>
+        ${done&&bout.athleteBId?`<button class="profile-lnk" onclick="event.stopPropagation();openAthProfile(${bout.athleteBId},${cat.id})">← profile</button>`:''}
+      </div>
+      <button class="fav-star" style="font-size:.85rem;padding:0 4px" onclick="event.stopPropagation();toggleFavBout(${bout.id},${cat.id},'${escQ(nameA+' vs '+nameB)}')">${favd?'⭐':'☆'}</button>
+    </div>`;
+  });
+  return h;
+}
+
+function escQ(s){ return s.replace(/'/g,"\\'"); }
+
+// ── FAVOURITES VIEW ──
+function renderFavs(){
+  const root=document.getElementById('favs-view');
+  root.style.display='block';
+  const fightCount=Object.keys(favs.fighters).length;
+  const boutCount=Object.keys(favs.bouts).length;
+
+  let h='<div class="favs-view">';
+
+  // Notification settings
+  h+=`<div class="notif-toggle" onclick="toggleNotif()">
+    <span>🔔 Notifications when favourite is about to wrestle</span>
+    <div class="toggle-sw ${notifEnabled?'on':''}" id="notif-sw"></div>
+  </div>`;
+  if(notifEnabled){
+    h+=`<div class="notif-distance">
+      <div class="ndist-label">Alert me when they are:</div>
+      ${[3,2,1,0].map(n=>`<div class="ndist-opt ${notifDistances.includes(n)?'on':''}" onclick="toggleNdist(${n})">${n} bout${n!==1?'s':''} away</div>`).join('')}
+    </div>`;
+  }
+
+  // Favourite fighters
+  h+=`<div class="fav-section-title"><span>Favourite Fighters</span></div>`;
+  if(!fightCount){
+    h+=`<div class="empty-favs">No favourite fighters yet.<br>Tap a fighter's name in standings or results to add them.</div>`;
+  } else {
+    Object.entries(favs.fighters).forEach(([athId,info])=>{
+      const cat=allCats.find(c=>c.id===info.catId);
+      const br=bracketCache[info.catId];
+      // Find next upcoming bout for this fighter
+      let nextBout=null, boutsAway=null;
+      if(br){
+        const pending=[];
+        eachBout(br,b=>{ if(!b.bye&&!b.locked&&(b.athleteAId==athId||b.athleteBId==athId)) pending.push(b); });
+        pending.sort((a,b)=>(a.number||999)-(b.number||999));
+        if(pending.length){ nextBout=pending[0]; boutsAway=0; }
+        // Count bouts before them on same mat
+        const allPending=[];
+        eachBout(br,b=>{ if(!b.bye&&!b.locked) allPending.push(b); });
+        allPending.sort((a,b)=>(a.number||999)-(b.number||999));
+        if(nextBout) boutsAway=allPending.findIndex(b=>b.id===nextBout.id);
+      }
+
+      h+=`<div style="background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:center;gap:10px;cursor:pointer" onclick="${br?`openAthProfile(${athId},${info.catId})`:''}">
+        <div style="flex:1;min-width:0">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:.95rem;font-weight:700;color:var(--white)">${info.name}</div>
+          <div style="font-family:'Barlow',sans-serif;font-size:.68rem;color:var(--muted)">${info.club||''} ${cat?'· '+cat.groupName+' '+cat.name:''}</div>
+          ${nextBout?`<div style="font-family:'Barlow Condensed',sans-serif;font-size:.7rem;color:var(--amber);margin-top:3px">Next: vs ${nextBout.athleteAId==athId?nextBout.nameB:nextBout.nameA} (${boutsAway===0?'up next':`${boutsAway} bout${boutsAway!==1?'s':''} away`})</div>`
+           :`<div style="font-family:'Barlow Condensed',sans-serif;font-size:.68rem;color:var(--muted);margin-top:2px">${br?'No upcoming bouts':'Load category for updates'}</div>`}
+        </div>
+        <button class="fav-star" onclick="event.stopPropagation();removeFavFighter(${athId})">⭐</button>
+      </div>`;
+    });
+  }
+
+  // Favourite bouts
+  h+=`<div class="fav-section-title" style="margin-top:16px"><span>Favourite Bouts</span></div>`;
+  if(!boutCount){
+    h+=`<div class="empty-favs">No favourite bouts yet.<br>Tap ☆ on any bout to track it.</div>`;
+  } else {
+    Object.entries(favs.bouts).forEach(([boutId,info])=>{
+      const br=bracketCache[info.catId];
+      let boutObj=null;
+      if(br) eachBout(br,b=>{ if(b.id==boutId) boutObj=b; });
+      const done=boutObj?.locked;
+      h+=`<div style="background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:10px 12px;margin-bottom:8px;cursor:pointer" onclick="${boutObj?`openBoutDetail(${boutId},${info.catId})`:''}">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:.9rem;font-weight:600;color:var(--white)">${info.name||'Bout #'+boutId}</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+          ${done?`<span class="rb w">DONE</span><span style="font-family:'Barlow Condensed',sans-serif;font-size:.78rem;color:var(--green)">${boutObj?.nameA||''}  ${boutObj?.scoreA??''}–${boutObj?.scoreB??''}  ${boutObj?.nameB||''}</span>`
+                :`<span style="font-family:'Barlow Condensed',sans-serif;font-size:.72rem;color:var(--muted)">${br?'Pending':'Load category for updates'}</span>`}
+          <button class="fav-star" style="margin-left:auto" onclick="event.stopPropagation();removeFavBout(${boutId})">⭐</button>
+        </div>
+      </div>`;
+    });
+  }
+
+  h+='</div>';
+  root.innerHTML=h;
+  updateFavBadge();
+}
+
+// ── TOGGLE FAVS ──
+function toggleFavBout(boutId,catId,name){
+  if(favs.bouts[boutId]){ delete favs.bouts[boutId]; showToast('Removed from favourites'); }
+  else { favs.bouts[boutId]={catId,name}; showToast('⭐ Added to favourites'); }
+  saveFavs(); updateFavBadge();
+  renderCurrentTab();
+}
+
+function toggleFavFighter(athId,catId,name,club=''){
+  if(favs.fighters[athId]){ delete favs.fighters[athId]; showToast('Removed from favourites'); }
+  else { favs.fighters[athId]={catId,name,club}; showToast('⭐ Added to favourites'); }
+  saveFavs(); updateFavBadge();
+}
+
+function removeFavFighter(athId){ delete favs.fighters[athId]; saveFavs(); updateFavBadge(); renderFavs(); }
+function removeFavBout(boutId){ delete favs.bouts[boutId]; saveFavs(); updateFavBadge(); renderFavs(); }
+function saveFavs(){ localStorage.setItem('bw_favs',JSON.stringify(favs)); }
+function updateFavBadge(){
+  const n=Object.keys(favs.fighters).length+Object.keys(favs.bouts).length;
+  const b=document.getElementById('fav-badge');
+  b.textContent=n; b.style.display=n>0?'flex':'none';
+}
+
+// ── NOTIFICATIONS ──
+function toggleNotif(){
+  notifEnabled=!notifEnabled;
+  localStorage.setItem('bw_notif',JSON.stringify(notifEnabled));
+  if(notifEnabled&&'Notification' in window&&Notification.permission==='default'){
+    Notification.requestPermission();
+  }
+  renderFavs();
+}
+
+function toggleNdist(n){
+  if(notifDistances.includes(n)) notifDistances=notifDistances.filter(d=>d!==n);
+  else notifDistances=[...notifDistances,n].sort((a,b)=>b-a);
+  localStorage.setItem('bw_ndist',JSON.stringify(notifDistances));
+  renderFavs();
+}
+
+function checkNotifications(){
+  if(!notifEnabled||!('Notification' in window)||Notification.permission!=='granted') return;
+  Object.entries(favs.fighters).forEach(([athId,info])=>{
+    const br=bracketCache[info.catId];
+    if(!br) return;
+    const allPending=[];
+    eachBout(br,b=>{ if(!b.bye&&!b.locked) allPending.push(b); });
+    allPending.sort((a,b)=>(a.number||999)-(b.number||999));
+    const myIdx=allPending.findIndex(b=>b.athleteAId==athId||b.athleteBId==athId);
+    if(myIdx>=0&&notifDistances.includes(myIdx)){
+      const boutObj=allPending[myIdx];
+      const opp=boutObj.athleteAId==athId?boutObj.nameB:boutObj.nameA;
+      new Notification(`🤼 ${info.name}`,{
+        body:`${myIdx===0?'Up next':'In '+myIdx+' bout'+(myIdx>1?'s':'')+''}: vs ${opp}`,
+        icon:'icons/icon-192x192.png'
+      });
+    }
+  });
+}
+
+// ── BOUT DETAIL MODAL ──
+function openBoutDetail(boutId,catId){
+  const br=bracketCache[catId];
+  if(!br) return;
+  let found=null;
+  eachBout(br,b=>{ if(b.id===boutId) found=b; });
+  if(!found) return;
+
+  const cat=allCats.find(c=>c.id===catId);
+  const done=!!found.locked;
+  const winA=done&&found.victoryId===found.athleteAId;
+  const winB=done&&found.victoryId===found.athleteBId;
+  const nameA=found.nameA||'TBD', nameB=found.nameB||'TBD';
+  const endT=found.end?new Date(found.end).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}):'—';
+  const matName=getBoutMat(found,br)||br.mats?.[0]?.session?.mat?.name||'—';
+  const favd=!!favs.bouts[boutId];
+
+  document.getElementById('bm-title').textContent=`Bout #${found.number||boutId}`;
+  document.getElementById('bm-sub').textContent=cat?`${cat.groupName} · ${cat.name||cat.discipline}`:'' ;
+
+  document.getElementById('bm-body').innerHTML=`
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      ${[['A',found,found.athleteAId,nameA,found.athleteA,winA],['B',found,found.athleteBId,nameB,found.athleteB,winB]].map(([side,b,athId,name,ath,won])=>`
+      <div style="flex:1;background:${won?'rgba(43,199,110,.08)':'rgba(255,255,255,.03)'};border:1px solid ${won?'rgba(43,199,110,.25)':'rgba(255,255,255,.06)'};border-radius:7px;padding:10px;text-align:center">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:.9rem;font-weight:700;margin-bottom:2px">${name}</div>
+        <div style="font-family:'Barlow',sans-serif;font-size:.65rem;color:var(--muted)">${ath?.clubName||''}</div>
+        ${ath?.weight?.value?`<div style="font-family:'Barlow Condensed',sans-serif;font-size:.65rem;color:var(--gold);margin-top:3px">${ath.weight.value.toFixed(1)}kg</div>`:''}
+        ${won?`<div style="font-family:'Barlow Condensed',sans-serif;font-size:.6rem;color:var(--green);font-weight:700;margin-top:4px">🏆 WINNER</div>`:''}
+        ${athId?`<button style="display:block;width:100%;margin-top:6px;font-family:'Barlow Condensed',sans-serif;font-size:.65rem;color:var(--blue);background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:2px" onclick="closeModal('bout-ovl');openAthProfile(${athId},${catId})">View profile →</button>`:''}
+        <button class="fav-star" style="margin-top:4px;display:block;width:100%;text-align:center" onclick="toggleFavFighter(${athId},${catId},'${escQ(name)}','${escQ(ath?.clubName||'')}')">${favs.fighters[athId]?'⭐ Fav':'☆ Fav'}</button>
+      </div>`).join('<div style="display:flex;align-items:center;padding:0 4px;font-family:\'Bebas Neue\',sans-serif;font-size:1.1rem;color:var(--red);flex-shrink:0">VS</div>')}
+    </div>
+
+    ${done?`<div class="score-hero">
+      <div class="score-big">${found.scoreA??'—'} – ${found.scoreB??'—'}</div>
+      <div class="score-method">${found.classification?.name||''}</div>
+    </div>`:'<div style="text-align:center;color:var(--muted);font-family:\'Barlow Condensed\',sans-serif;padding:12px;letter-spacing:1px">Bout not yet completed</div>'}
+
+    <div class="meta-block">
+      ${metaRow('Mat',matName)}
+      ${metaRow('Method',found.classification?.name||'—')}
+      ${metaRow('Points A / B',done?`${found.pointsA??'—'} / ${found.pointsB??'—'}`:'—')}
+      ${metaRow('Completed',done?endT:'Pending')}
+      ${metaRow('Bout No.',found.number?'#'+found.number:'—')}
+    </div>
+
+    <button class="btn btn-ghost" style="width:100%;margin-top:4px" onclick="toggleFavBout(${boutId},${catId},'${escQ(nameA+' vs '+nameB)}')">${favd?'⭐ Remove from Favourites':'☆ Add to Favourites'}</button>`;
+
+  document.getElementById('bout-ovl').classList.add('open');
+}
+
+function metaRow(k,v){
+  return `<div class="meta-row"><span class="mk">${k}</span><span class="mv">${v||'—'}</span></div>`;
+}
+
+// ── ATHLETE PROFILE MODAL ──
+function openAthProfile(athId,catId){
+  const br=bracketCache[catId];
+  if(!br) return;
+  const ath=br.athletes?.find(a=>a.id===athId);
+  if(!ath) return;
+
+  const name=ath.name||'Unknown';
+  const initials=(ath.initials||name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2));
+  const club=ath.club?.name||'';
+  const weight=ath.weight?.value;
+  const memberId=ath.memberId;
+  const memberNo=ath.member?.membershipNo||'';
+  const age=ath.member?.age;
+  const placement=br.allPlacements?.find(p=>p.athleteId===athId);
+  const pos=placement?.position;
+  const medal=pos===1?'🥇':pos===2?'🥈':pos===3?'🥉':'';
+
+  let won=0,lost=0,pts=0,score=0,bouts=0;
+  br.stages?.forEach(s=>s.groups?.forEach(g=>g.members?.forEach(m=>{
+    if(m.athleteId===athId){won=m.won||0;lost=m.lost||0;pts=m.points||0;score=m.score||0;bouts=m.bouts||0;}
+  })));
+
+  const myBouts=[];
+  eachBout(br,b=>{ if(!b.bye&&(b.athleteAId===athId||b.athleteBId===athId)) myBouts.push(b); });
+  const isFav=!!favs.fighters[athId];
+
+  const cat=allCats.find(c=>c.id===catId);
+
+  // BW member search URL (profile pages require auth, so we link to search)
+  const bwSearchUrl=`https://britishwrestling.justgo.com/Workbench/public/events?summary=all`;
+
+  let h=`<div class="ath-hero">
+    <div class="ath-av">${initials}</div>
+    <div class="ath-hi">
+      <h3>${name} ${medal}</h3>
+      <div class="ahc">${club}</div>
+      ${weight?`<div class="ahw">⚖ ${weight.toFixed(1)}kg weighed in</div>`:''}
+      ${pos?`<div style="font-family:'Barlow Condensed',sans-serif;font-size:.68rem;color:var(--gold);margin-top:2px">Position: ${pos}${pos===1?' · Champion':''}</div>`:''}
+    </div>
+  </div>
+  <div class="ath-stats">
+    <div class="as g"><div class="asv">${won}</div><div class="asl">Wins</div></div>
+    <div class="as r"><div class="asv">${lost}</div><div class="asl">Losses</div></div>
+    <div class="as a"><div class="asv">${pts}</div><div class="asl">Points</div></div>
+    <div class="as"><div class="asv">${score}</div><div class="asl">Score</div></div>
+    <div class="as"><div class="asv">${bouts}</div><div class="asl">Bouts</div></div>
+  </div>
+  <div class="mbody">
+    <button class="btn ${isFav?'btn-gold':'btn-ghost'}" style="width:100%;margin-bottom:12px" onclick="toggleFavFighter(${athId},${catId},'${escQ(name)}','${escQ(club)}');this.className='btn '+(favs.fighters[${athId}]?'btn-gold':'btn-ghost');this.textContent=favs.fighters[${athId}]?'⭐ Following':'☆ Follow'">
+      ${isFav?'⭐ Following':'☆ Follow'}
+    </button>
+
+    <div class="sec-div"><span>Tournament Bouts</span></div>`;
+
+  myBouts.forEach(bout=>{
+    const isA=bout.athleteAId===athId;
+    const oppName=isA?(bout.nameB||'TBD'):(bout.nameA||'TBD');
+    const oppClub=isA?(bout.athleteB?.clubName||''):(bout.athleteA?.clubName||'');
+    const done=!!bout.locked;
+    const iWon=done&&bout.victoryId===athId;
+    const mySc=isA?(bout.scoreA??'—'):(bout.scoreB??'—');
+    const oppSc=isA?(bout.scoreB??'—'):(bout.scoreA??'—');
+    const endT=bout.end?new Date(bout.end).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}):'';
+    const matName=getBoutMat(bout,br)||br.mats?.[0]?.session?.mat?.name||'';
+
+    h+=`<div class="br" onclick="closeModal('ath-ovl');openBoutDetail(${bout.id},${catId})">
+      <div class="br-ath" style="flex:1;min-width:0">
+        <div class="br-name">${oppName}</div>
+        <div class="br-club">${oppClub}</div>
+      </div>
+      ${done?`<div class="br-mid">
+        <div class="br-score" style="color:${iWon?'var(--green)':'var(--muted)'}">${mySc}–${oppSc}</div>
+        <div class="br-code">${bout.classification?.code||''}</div>
+        <div class="br-time">${endT}${matName?' · '+matName:''}</div>
+      </div>
+      <span class="rb ${iWon?'w':'l'}">${iWon?'WIN':'LOSS'}</span>`
+      :`<div class="br-mid"><div class="br-vs">VS</div><div class="br-code">Upcoming${matName?' · '+matName:''}</div></div>`}
+    </div>`;
+  });
+
+  h+=`<div class="sec-div"><span>British Wrestling</span></div>
+  <div class="bw-link" onclick="window.open('${bwSearchUrl}','_blank')">
+    <span style="font-size:1.2rem">🏴󠁧󠁢󠁥󠁮󠁧󠁿</span>
+    <div class="bw-link-text">
+      <div class="bw-link-title">British Wrestling Events Calendar</div>
+      <div class="bw-link-sub">Member profiles require login · opens events page${memberNo?' · Member '+memberNo:''}</div>
+    </div>
+    <span class="bw-link-arr">↗</span>
+  </div>
+
+  ${age?`<div class="meta-block" style="margin-top:10px">
+    ${metaRow('Age',age)}
+    ${memberNo?metaRow('Member No.',memberNo):''}
+  </div>`:''}
+  </div>`;
+
+  document.getElementById('ath-content').innerHTML=h;
+  document.getElementById('ath-ovl').classList.add('open');
+}
+
+// ── MODALS ──
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.ovl').forEach(el=>el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open');}));
+
+// ── TOAST ──
+function showToast(msg,type='green'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.style.background=type==='red'?'var(--red)':'var(--green)';
+  t.style.color=type==='red'?'#fff':'#000';
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// ── INIT ──
+updateFavBadge();
+discoverEvents();
+// Check notifications every 2min
+setInterval(checkNotifications,120000);
+</script>
+</body>
+</html>
